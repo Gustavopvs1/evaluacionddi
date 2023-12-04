@@ -8,7 +8,7 @@ import StackFavoritos from '../StackNavigation/StackFavoritos';
 import StackAccount from '../StackNavigation/StackAccount';
 import StackHome from '../StackNavigation/StackHome';
 import StackCategorias from '../StackNavigation/StackCategorias';
-import StackReseñas from '../StackNavigation/StackReseñas';
+import StackFav from '../StackNavigation/StackFav';
 import StackMapa from '../StackNavigation/StackMapa';
 
 const TabNavigations = () => {
@@ -50,8 +50,8 @@ const TabNavigations = () => {
                 }}
             />
             <Tab.Screen
-                name='StackReseñas'
-                component={StackReseñas}
+                name='StackFav'
+                component={StackFav}
                 options={{
                     title: 'Reseñas',
                     headerTitleAlign: 'center',
@@ -85,7 +85,7 @@ const setIcon = (route, routeStatus) => {
     if (route.name === 'StackCategorias') {
         iconName = 'list';
     }
-    if (route.name === 'StackReseñas') {
+    if (route.name === 'StackFav') {
         iconName = 'star-half-o';
     }
     if (route.name === 'StackMapa') {
