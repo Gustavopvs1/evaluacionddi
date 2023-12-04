@@ -14,7 +14,6 @@ import PlaceDetailComponent from './PlaceDetailComponent';
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 
-
 const StackHome = ({ navigation }) => {
     const Stack = createNativeStackNavigator();
 
@@ -27,9 +26,9 @@ const StackHome = ({ navigation }) => {
                     >
                         <View
                             style={{
-                                backgroundColor: '#24EF2C', // Fondo blanco
-                                borderRadius: 23, // Borde redondeado
-                                padding: 2, // Espaciado interno
+                                backgroundColor: '#24EF2C',
+                                borderRadius: 23,
+                                padding: 2,
                                 marginRight: 3,
                             }}
                         >
@@ -39,21 +38,21 @@ const StackHome = ({ navigation }) => {
                                     width: 45,
                                     height: 45,
                                     borderRadius: 20,
-                                    overflow: 'hidden', // Oculta el contenido que se desborda
+                                    overflow: 'hidden',
                                 }}
                             />
                         </View>
                     </TouchableOpacity>
                 ),
                 headerStyle: {
-                    backgroundColor: '#E0E0E0', // Fondo blanco de la barra de navegación
+                    backgroundColor: '#E0E0E0',
                 },
-                headerShadowVisible: false, // Quitar la sombra
+                headerShadowVisible: false,
             }}
         >
             <Stack.Screen
                 name='Home'
-                component={HomeScreen}
+                children={() => <HomeScreen navigation={navigation} />}
                 options={{
                     headerTitle: '',
                 }}
@@ -74,65 +73,64 @@ const HomeScreen = ({ navigation }) => {
     const [location, setLocation] = useState(null);
 
     useEffect(() => {
-      const fetchLocation = async () => {
-          try {
-              const { status } = await Permissions.askAsync(Permissions.LOCATION);
+        const fetchLocation = async () => {
+            try {
+                const { status } = await Permissions.askAsync(Permissions.LOCATION);
 
-              if (status === 'granted') {
-                  const currentLocation = await Location.getCurrentPositionAsync({});
-                  setLocation(currentLocation.coords);
-              } else {
-                  console.warn('Permiso de ubicación denegado');
-              }
-          } catch (error) {
-              console.error('Error al obtener la ubicación:', error);
-          }
-      };
+                if (status === 'granted') {
+                    const currentLocation = await Location.getCurrentPositionAsync({});
+                    setLocation(currentLocation.coords);
+                } else {
+                    console.warn('Permiso de ubicación denegado');
+                }
+            } catch (error) {
+                console.error('Error al obtener la ubicación:', error);
+            }
+        };
 
-      fetchLocation();
-  }, []);
-
+        fetchLocation();
+    }, []);
 
     useEffect(() => {
-      if (location) {
-        const radius = 1000;
-        const types = 'restaurant';
-        const query = 'food';
-        const region = 'mx:qro';
-        const maxResults = 10;
+        if (location) {
+            const radius = 1000;
+            const types = 'restaurant';
+            const query = 'food';
+            const region = 'mx:qro';
+            const maxResults = 10;
 
-        const fetchData = async () => {
-          try {
-              const response = await getPlaces(
-                  `${location.latitude},${location.longitude}`,
-                  radius,
-                  types,
-                  query,
-                  region,
-                  maxResults
-              );
+            const fetchData = async () => {
+                try {
+                    const response = await getPlaces(
+                        `${location.latitude},${location.longitude}`,
+                        radius,
+                        types,
+                        query,
+                        region,
+                        maxResults
+                    );
 
-              const detailedPlaces = await Promise.all(
-                  response.results.map(async (place, index) => {
-                      const details = await getPlaceDetails(place.place_id);
-                      return {
-                          id: `${place.place_id}_${index}`,
-                          name: place.name,
-                          detail: details.formatted_address,
-                          reviewCount: details.user_ratings_total,
-                      };
-                  })
-              );
+                    const detailedPlaces = await Promise.all(
+                        response.results.map(async (place, index) => {
+                            const details = await getPlaceDetails(place.place_id);
+                            return {
+                                id: `${place.place_id}_${index}`,
+                                name: place.name,
+                                detail: details.formatted_address,
+                                reviewCount: details.user_ratings_total,
+                            };
+                        })
+                    );
 
-              setPlaces(detailedPlaces);
-          } catch (error) {
-              console.error(error);
-          }
-      };
+                    setPlaces(detailedPlaces);
+                } catch (error) {
+                    console.error(error);
+                }
+            };
 
-      fetchData();
-  }
-}, [location]);
+            fetchData();
+        }
+    }, [location]);
 
     return (
         <ScrollView contentContainerStyle={styles.container}>
@@ -208,16 +206,16 @@ const styles = StyleSheet.create({
     title: {
         color: '#000',
         fontWeight: 'bold',
-        fontSize: 16, // Ajusta según sea necesario
+        fontSize: 16,
     },
     description: {
         color: '#000',
-        fontSize: 14, // Ajusta según sea necesario
+        fontSize: 14,
     },
     detail: {
         color: '#000',
         fontSize: 12,
-        marginTop: 15, // Ajusta según sea necesario
+        marginTop: 15,
     },
     rightArrowIcon: {
         marginLeft: 'auto',

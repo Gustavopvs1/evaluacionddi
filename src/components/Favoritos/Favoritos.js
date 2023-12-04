@@ -42,12 +42,12 @@ export default function Favoritos(props) {
         }
     };
 
-    const iconColor = isFavorite ? 'red' : 'white';
+    const iconColor = isFavorite ? 'red' : 'gray';
     return (
         <IconButton
             icon='heart'
             iconColor={iconColor}
-            size={50}
+            size={30}
             onPress={isFavorite ? removeFavoritos : addFavoritos}
         />
     );

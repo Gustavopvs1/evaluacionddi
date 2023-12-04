@@ -5,15 +5,20 @@ import { useAuth } from '../hooks/useAuth';
 import { userController } from '../api/user';
 import { getFavoriteApi } from '../api/favoritos';
 import { useNavigation } from '@react-navigation/native';
+import FavoritesScreen from './Favoritos';
 
 export default function Account() {
     const { logout, user, upDateUser } = useAuth();
-    console.log('Datos del usuario:', user);
-
     const navigation = useNavigation(); // Obtén el objeto de navegación
+
     const navigateToChangeProfile = () => {
         // Navegar a la página de cambios de perfil
         navigation.navigate('ChangeProfile');
+    };
+
+    const navigateToFavorites = () => {
+        // Navegar a la pantalla de favoritos
+        navigation.navigate('FavoritesScreen');
     };
 
     const logoutAlert = () => {
@@ -64,6 +69,9 @@ export default function Account() {
                         />
                     </Text>
 
+
+
+                    {/* Botón para cerrar sesión */}
                     <Button
                         mode='contained'
                         onPress={logoutAlert}
@@ -84,27 +92,28 @@ const styles = StyleSheet.create({
     },
     header: {
         alignItems: 'center',
-        marginBottom: 20,
+        marginBottom: 60,
     },
     profileImage: {
-        width: 100,
-        height: 100,
-        borderRadius: 50,
+        width: 150,
+        height: 150,
+        borderRadius: 80,
+        marginTop: 30
     },
     title: {
         color: '#000',
         fontSize: 40,
         fontWeight: 'bold',
-        marginBottom: 10,
+        marginBottom: 20,
         textAlign: 'center',
     },
     mainContainer: {
         flex: 1,
         paddingTop: 15,
-        marginHorizontal: 20,
+        marginHorizontal: 50,
     },
     name: {
-        fontSize: 20,
+        fontSize: 30,
         fontWeight: 'bold',
         marginBottom: 10,
         color: '#000',
@@ -112,6 +121,6 @@ const styles = StyleSheet.create({
     },
     button: {
         marginBottom: 20,
-        marginTop: 20,
+        marginTop: 40,
     },
 });

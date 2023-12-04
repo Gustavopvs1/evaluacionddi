@@ -1,52 +1,46 @@
-import React, { useCallback, useState, useEffect } from 'react';
-import { getFavoriteApi } from '../api/favoritos';
-import HomeScreen from './HomeScreen';
-import { useFocusEffect } from '@react-navigation/native';
+// FavoritesScreen.js
+import React, { useCallback, useEffect, useState } from 'react';
+import StackHome from '../components/navigation/StackNavigation/StackHome';
 import axios from 'axios';
 import { ENV } from '../utils/constants';
+import { useFocusEffect } from '@react-navigation/native';
+import { getFavoriteApi } from '../api/favoritos';
 
 export default function FavoritesScreen() {
-    const [characters, setCharacters] = useState([]);
-    const [favoritos, setFavoritos] = useState([]);
+  const [places, setPlaces] = useState([]);
+  const [favoritos, setFavoritos] = useState([]);
 
-    const fetchCharacters = async (url) => {
-        if (characters.length > 200) {
-            return;
-        }
-        try {
-            const response = await axios.get(url);
-            const newCharacters = response.data.results;
-            setCharacters((prevCharacters) => [
-                ...prevCharacters,
-                ...newCharacters,
-            ]);
+  const fetchPlaces = async (url) => {
+    try {
+      const response = await axios.get(url);
+      const newPlaces = response.data.results;
+      setPlaces((prevPlaces) => [...prevPlaces, ...newPlaces]);
 
-            if (response.data.info.next) {
-                fetchCharacters(response.data.info.next);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-    };
+      if (response.data.info.next) {
+        fetchPlaces(response.data.info.next);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-    useEffect(() => {
-        fetchCharacters(ENV.API_URL_RM);
-    }, []);
+  useEffect(() => {
+    fetchPlaces(ENV.APIKEY_PLACE);
+  }, []);  // Ejecutar solo al montar el componente
 
-    useFocusEffect(
-        useCallback(() => {
-            (async () => {
-                const pjFavoritos = await getFavoriteApi();
-                setFavoritos(pjFavoritos);
-            })();
-        }, [])
-    );
+  useFocusEffect(
+    useCallback(async () => {
+      const plFavoritos = await getFavoriteApi();
+      setFavoritos(plFavoritos);
+    }, [])
+  );
 
-    return (
-        <HomeScreen
-            characters={characters.filter((char) =>
-                favoritos.includes(char.id)
-            )}
-        />
-    );
+  useEffect(() => {
+    // Filtrar lugares basados en favoritos cada vez que favoritos cambie
+    setPlaces((prevPlaces) => prevPlaces.filter((place) => favoritos.includes(place.id)));
+  }, [favoritos]);  // Dependencia de favoritos
+
+  return (
+    <StackHome places={places} />
+  );
 }

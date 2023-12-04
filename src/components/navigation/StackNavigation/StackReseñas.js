@@ -1,69 +1,51 @@
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { TouchableOpacity, Image, View, Text } from 'react-native';
-import StackAccount from '../StackNavigation/StackAccount';
+import React, { useCallback, useEffect, useState } from 'react';
+import StackHome from './StackHome';
+import axios from 'axios';
+import { ENV } from '../../../utils/constants';
+import { useFocusEffect } from '@react-navigation/native';
+import { getFavoriteApi } from '../../../api/favoritos';
 
-const StackReseñas = ({ navigation }) => {
-    const Stack = createNativeStackNavigator();
+export default function FavoritesScreen() {
+  const [places, setPlaces] = useState([]);
+  const [favoritos, setFavoritos] = useState([]);
 
-    return (
-        <Stack.Navigator
-            screenOptions={{
-                headerRight: () => (
-                    <TouchableOpacity
-                        onPress={() => navigation.navigate('StackAccount')}
-                    >
-                        <View
-                            style={{
-                                backgroundColor: '#24EF2C', // Fondo blanco
-                                borderRadius: 23, // Borde redondeado
-                                padding: 2, // Espaciado interno
-                                marginRight: 3,
-                            }}
-                        >
-                            <Image
-                                source={require('../../../assets/person1.jpeg')}
-                                style={{
-                                    width: 45,
-                                    height: 45,
-                                    borderRadius: 20,
-                                    overflow: 'hidden', // Oculta el contenido que se desborda
-                                }}
-                            />
-                        </View>
-                    </TouchableOpacity>
-                ),
-                headerStyle: {
-                    backgroundColor: '#E0E0E0', // Fondo blanco de la barra de navegación
-                },
-                headerShadowVisible: false, // Quitar la sombra
-            }}
-        >
-            <Stack.Screen
-                name='Reseñas'
-                component={ReseñasScreen}
-                options={{
-                    headerTitle: '',
-                }}
-            />
-        </Stack.Navigator>
-    );
-};
+  const fetchPlaces = async (url) => {
+    try {
+      const response = await axios.get(url);
+      const newPlaces = response.data.results;
+      setPlaces((prevPlaces) => [...prevPlaces, ...newPlaces]);
 
-const ReseñasScreen = () => {
-    return (
-        <View
-            style={{
-                backgroundColor: '#E0E0E0',
-                flex: 1,
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}
-        >
-            <Text>Bienvenido a Reseñas</Text>
-            {/* Tu contenido adicional aquí */}
-        </View>
-    );
-};
+      if (response.data.info.next) {
+        fetchPlaces(response.data.info.next);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-export default StackReseñas;
+  useEffect(() => {
+    fetchPlaces(ENV.APIKEY_PLACE);
+  }, []);  // Ejecutar solo al montar el componente
+
+  useFocusEffect(
+    useCallback(() => {
+      const fetchData = async () => {
+        try {
+          const plFavoritos = await getFavoriteApi();
+          setFavoritos(plFavoritos);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+
+      fetchData();
+    }, [])
+  );
+
+  // Mostrar solo los primeros 3 lugares
+  const displayedPlaces = places.slice(0, 3);
+
+  return (
+    <StackHome places={displayedPlaces} />
+  );
+}

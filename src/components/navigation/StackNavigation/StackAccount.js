@@ -6,6 +6,7 @@ import ChangeName from '../../../screen/ChangeName/ChangeName';
 import ChangeEmail from '../../../screen/ChangeEmail/ChangeEmail';
 import ChangeUsername from '../../../screen/ChangeUsername/ChangeUsername';
 import ChangePassword from '../../../screen/ChangePassword/ChangePassword';
+import FavoritesScreen from '../../../screen/Favoritos';
 
 export default function StackAccount() {
     const Stack = createNativeStackNavigator();
@@ -56,6 +57,14 @@ export default function StackAccount() {
                 component={ChangePassword}
                 options={{
                     title: 'Cambiar Contraseña',
+                    headerTransparent: true,
+                }}
+            />
+            <Stack.Screen
+                name='FavoritesScreen'
+                component={FavoritesScreen}
+                options={{
+                    title: '',
                     headerTransparent: true,
                 }}
             />
